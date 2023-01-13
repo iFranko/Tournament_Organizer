@@ -1,0 +1,65 @@
+﻿@model Tournament_Organizer.Models.Tournament_Team
+
+@{
+    ViewData["Title"] = "Edit";
+}
+<style>
+
+    .action-button {
+        width: 100px;
+        background: #673AB7;
+        font-weight: bold;
+        color: white;
+        border: 0 none;
+        border-radius: 0px;
+        cursor: pointer;
+        padding: 10px 5px;
+        margin: 10px 0px 10px 5px;
+    }
+
+        .action-button:hover, #msform .action-button:focus {
+            background-color: #311B92;
+        }
+</style>
+<h1>Update Team Status</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Team_ID" />
+            <input type="hidden" asp-for="Tournament_ID" />
+            <input type="hidden" asp-for="Points" />
+            <input type="hidden" asp-for="Scores" />
+            <input type="hidden" asp-for="Active" />
+            <input type="hidden" asp-for="NumberOfMatches" />
+            <div class="form-group">
+                <label asp-for="Status"></label>
+                <select asp-for="Status" class="form-control">
+                    <option value="Pending" selected>Pending</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+           
+            <div class="form-group">
+                <label asp-for="Group" class="control-label"></label>
+                <select asp-for="Group" class="form-control" asp-items="ViewBag.Groups"></select>
+                <span asp-validation-for="Group" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Update" class="action-button" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to Teams Dashboard</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

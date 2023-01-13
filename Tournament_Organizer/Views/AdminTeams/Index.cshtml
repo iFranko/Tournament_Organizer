@@ -1,0 +1,209 @@
+﻿@model IEnumerable<Tournament_Organizer.Models.Team>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<style>
+    /*----  Main Style  ----*/
+
+    .option {
+        position: relative;
+        z-index: 2;
+    }
+
+        .option ul {
+            margin: 0;
+            padding: 0;
+        }
+
+            .option ul li {
+                margin: 0 0 10px;
+                padding: 0;
+                list-style: none;
+                color: #000000;
+                font-size: 16px;
+            }
+
+    #cards_landscape_wrap-2 {
+        text-align: center;
+        background: #ffffff;
+    }
+
+        #cards_landscape_wrap-2 .container {
+            padding-top: 80px;
+            padding-bottom: 100px;
+        }
+
+        #cards_landscape_wrap-2 a {
+            text-decoration: none;
+            outline: none;
+        }
+
+        #cards_landscape_wrap-2 .card-flyer {
+            border-radius: 5px;
+        }
+
+            #cards_landscape_wrap-2 .card-flyer .image-box {
+                background: #ffffff;
+                overflow: hidden;
+                box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.50);
+                border-radius: 5px;
+            }
+
+                #cards_landscape_wrap-2 .card-flyer .image-box img {
+                    -webkit-transition: all .9s ease;
+                    -moz-transition: all .9s ease;
+                    -o-transition: all .9s ease;
+                    /*-ms-transition: all .9s ease;*/
+                    width: 100%;
+                    height: 200px;
+                }
+
+            #cards_landscape_wrap-2 .card-flyer:hover .image-box img {
+                opacity: 0.7;
+                -webkit-transform: scale(1.15);
+                -moz-transform: scale(1.15);
+                -ms-transform: scale(1.15);
+                -o-transform: scale(1.15);
+                transform: scale(1.15);
+            }
+
+            #cards_landscape_wrap-2 .card-flyer .text-box {
+                text-align: center;
+            }
+
+                #cards_landscape_wrap-2 .card-flyer .text-box .text-container {
+                    padding: 30px 18px;
+                }
+
+        #cards_landscape_wrap-2 .card-flyer {
+            background: #FFFFFF;
+            margin-top: 50px;
+            -webkit-transition: all 0.2s ease-in;
+            -moz-transition: all 0.2s ease-in;
+            /*-ms-transition: all 0.2s ease-in;*/
+            -o-transition: all 0.2s ease-in;
+            transition: all 0.2s ease-in;
+            box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.40);
+        }
+
+            #cards_landscape_wrap-2 .card-flyer:hover {
+                background: #fff;
+                box-shadow: 0px 15px 26px rgba(0, 0, 0, 0.50);
+                -webkit-transition: all 0.2s ease-in;
+                -moz-transition: all 0.2s ease-in;
+                /*-ms-transition: all 0.2s ease-in;*/
+                -o-transition: all 0.2s ease-in;
+                transition: all 0.2s ease-in;
+                margin-top: 50px;
+            }
+
+            #cards_landscape_wrap-2 .card-flyer .text-box p {
+                margin-top: 10px;
+                margin-bottom: 0px;
+                padding-bottom: 0px;
+                font-size: 14px;
+                letter-spacing: 1px;
+                color: #000000;
+            }
+
+            #cards_landscape_wrap-2 .card-flyer .text-box h6 {
+                margin-top: 0px;
+                margin-bottom: 4px;
+                font-size: 18px;
+                font-weight: bold;
+                text-transform: uppercase;
+                font-family: 'Roboto Black', sans-serif;
+                letter-spacing: 1px;
+                color: #00acc1;
+            }
+
+</style>
+
+<h1>Teams</h1>
+
+@if (ViewBag.DetailManagerRole)
+{
+    @if (ViewBag.TeamID != null)
+    {
+        <div>
+            <div class="alert alert-dark alert-dismissible fade show">
+                <strong>Message!</strong> @ViewBag.TeamExistMessage Click <a class="btn btn-info"  asp-action="Details" asp-route-id="@ViewBag.TeamID">Here</a> To View Your Team
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+    }
+    @if (TempData["noTeam"] != null)
+    {
+                <div class="alert alert-warning alert-dismissible fade show">
+                    <strong>Messgae!</strong><em> @TempData["noTeam"] Click <a class="btn btn-info" asp-action="Create">Here</a>  </em>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+    }
+    @if (ViewBag.TeamID == null)
+    {
+        <p>
+            Create Your Team Today!! Click
+            <a class="btn btn-info" asp-action="Create">Here</a>
+            To Start
+        </p>
+    }
+}
+@if (ViewBag.teamPlayerID != null)
+{
+    <div>
+        <div class="alert alert-dark alert-dismissible fade show">
+            <strong>Message!</strong> @ViewBag.playerExistMessage Click <a class="btn btn-info" asp-action="Details" asp-route-id="@ViewBag.teamPlayerID">Here</a>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+}
+<form asp-controller="AdminTeams" asp-action="Index" class="form-inline my-2 my-lg-0">
+    <div class="input-group">
+        <div><input class="form-control" type="search" placeholder="Team Name" aria-label="Search" name="SearchString" value="@ViewBag.searchString"></div>
+        <div><button class="btn btn-primary" type="submit">Search</button></div>
+        
+    </div>
+</form>
+<div id="cards_landscape_wrap-2">
+    <div class="container">
+        <div class="row">
+            @foreach (var item in Model)
+            {
+              
+                    <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+                        <a asp-controller="AdminTeams"  asp-action="Edit" asp-route-id="@item.ID">
+                            <div class="card-flyer">
+                                <div class="text-box">
+                                    <div class="image-box">
+                                    @if (item.Image != null)
+                                    {
+                                        var base64 = Convert.ToBase64String(item.Image);
+                                        var imgsrc = string.Format("data:image/gif;base64,{0}", base64);
+                                        <img src="@imgsrc" alt="Profile Image" />
+                                    }
+                                    else
+                                    {
+                                        <img src="" alt="" />
+                                    }
+                                </div>
+                                <div class="text-container">
+                                    <h6>@Html.DisplayFor(modelItem => item.Team_Name)</h6>
+                                    <div class="option">
+                                        <ul>
+                                            <li><i  aria-hidden="true">Jersey Colour @Html.DisplayFor(modelItem => item.JerseyColour)</i></li>
+                                            <li><i  aria-hidden="true">@Html.DisplayFor(modelItem => item.Country), @Html.DisplayFor(modelItem => item.City), @Html.DisplayFor(modelItem => item.Zip_Code)</i></li>
+                                            <li><i  aria-hidden="true">Start Date @Html.DisplayFor(modelItem => item.Created_Date_Time.Value.DayOfWeek) - @Html.DisplayFor(modelItem => item.Created_Date_Time)</i></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+

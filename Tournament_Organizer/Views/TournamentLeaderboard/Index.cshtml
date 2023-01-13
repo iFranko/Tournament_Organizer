@@ -1,0 +1,245 @@
+﻿@model IEnumerable<Tournament_Organizer.Models.Tournament_Leaderboard>
+
+@{
+    ViewData["Title"] = "Index";
+
+    Pager pager = new Pager();
+    int pageNO = 0;
+
+    if(ViewBag.Pager != null){
+        pager = ViewBag.Pager;
+        pageNO = pager.CurrenPage;
+    }
+}
+
+<style>
+
+    .action-button {
+        width: 100px;
+        background: #673AB7;
+        font-weight: bold;
+        color: white;
+        border: 0 none;
+        border-radius: 0px;
+        cursor: pointer;
+        padding: 10px 5px;
+        margin: 10px 0px 10px 5px;
+    }
+
+        .action-button:hover, #msform .action-button:focus {
+            background-color: #311B92;
+        }
+
+</style>
+
+<h1>Set Games & Scores</h1>
+
+
+
+<div class="container">
+    @if (ViewBag.TeamName != null)
+    {
+        <div class="alert alert-@ViewBag.State alert-dismissible fade show">
+            <strong>Messgae!</strong><em> Tournament is over and the winner team is <strong>@ViewBag.TeamName</strong> Click <a asp-controller="Teams" asp-action="Details" asp-route-id="@ViewBag.TeamID">here</a> to see the team</em>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      
+    }
+
+    @if (ViewBag.NextStage == true)
+    {
+        //confirmation window to double check the useris leaving tournament
+        @if (@ViewBag.stageName=="End"){
+            <em>To end tournament click here</em>
+          
+        }
+        else{
+            <em>To go to next stage click here</em>
+        }
+         <button class="action-button" data-bs-toggle="modal" data-bs-target="#ConfirmModal" value="">
+            @ViewBag.stageName
+         </button>
+        <div class="modal fade" id="ConfirmModal" tabindex="-1" role="dialog" aria-labelledby="ConfirmModalTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="ConfirmModalTitle">Confirm to Leave</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <h7>Before confirming <em>when moving to next stage you won't be able to edit teams in previous stage.</em></h7><br />
+                        <h7>Click <Strong>Confirm</Strong> or <Strong>Cancel</Strong></h7>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="action-button" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                        <form id="msform" asp-controller="TournamentLeaderboard" asp-action="NextStage">
+                            <input type="submit" value="Confirm" class="action-button" />
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+    }
+    else
+    {
+        <em>An action of "Next/End Stage" will show up here once all games in current stage are completed.</em>
+    }
+    @if (TempData["previousTeams"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <strong>Messgae!</strong><em> @TempData["previousTeams"]</em>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["teamsNotCompleted"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <strong>Messgae!</strong><em> @TempData["teamsNotCompleted"] </em>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    <a class="action-button float-end text-center" asp-action="Create" style="text-decoration: none;">Add Teams</a>
+
+<table class="table">
+    <thead class="thead-light">
+        <tr>
+            
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.Team_One)
+            </th>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.Team_One_Score)
+            </th>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.Team_Two)
+            </th>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.Team_Two_Score)
+            </th>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.Tournament)
+            </th>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.Stage)
+            </th>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.Game_Date)
+            </th>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.GameNotes)
+            </th>
+            <th scope="col">
+                @Html.DisplayNameFor(model => model.Game_Status)
+            </th>
+            <th scope="col">
+                
+            </th>
+            <th scope="col">
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                      
+                <td>
+                        @if (item.Team_One.Image != null)
+                        {
+                            var base64 = Convert.ToBase64String(item.Team_One.Image);
+                            var imgsrc = string.Format("data:image/gif;base64,{0}", base64);
+                            <img src="@imgsrc" alt="Profile Image" name="aboutme" width="50" height="50" border="0" class="img-circle" />
+                        }
+                        else
+                        {
+                            <img src="" alt="" name="aboutme" width="50" height="50" border="0" class="img-circle" />
+                        }
+                    @Html.DisplayFor(modelItem => item.Team_One.Team_Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Team_One_Score)
+                </td>
+                <td>
+                        @if (item.Team_Two.Image != null)
+                        {
+                            var base64 = Convert.ToBase64String(item.Team_Two.Image);
+                            var imgsrc = string.Format("data:image/gif;base64,{0}", base64);
+                            <img src="@imgsrc" alt="Profile Image" name="aboutme" width="50" height="50" border="0" class="img-circle" />
+                        }
+                        else
+                        {
+                            <img src="" alt="" name="aboutme" width="50" height="50" border="0" class="img-circle" />
+                        }
+                    @Html.DisplayFor(modelItem => item.Team_Two.Team_Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Team_Two_Score)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Tournament.Tournament_Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Stage)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Game_Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GameNotes)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Game_Status)
+                </td>
+               
+                <td>
+
+                        <div class="btn btn-info">  @Html.ActionLink("Edit", "Edit", new { teamOneID=item.Team_One.ID, teamTwoID=item.Team_Two.ID, tournamentID = item.Tournament.ID, stage=item.Stage })</div>
+                     
+                </td>
+                <td >
+                        <div class="btn btn-info">@Html.ActionLink("Delete", "Delete", new { teamOneID=item.Team_One.ID, teamTwoID=item.Team_Two.ID, tournamentID = item.Tournament.ID, stage=item.Stage })</div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if(pager.TotalPages>0){
+    <ul class="pagination justify-content-end">
+
+        @if(pager.CurrenPage>1){
+                <li class="page-item">
+                    <a class="page-link" asp-controller="TournamentLeaderboard" asp-action="Index" asp-route-pg="1">First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" asp-controller="TournamentLeaderboard" asp-action="Index" asp-route-pg="@(pager.CurrenPage -1)">Previous</a>
+                </li>
+        }
+
+        @for(var pge = pager.StartPage; pge <= pager.EndPage; pge++){
+          <li class="page-item @(pge==pager.CurrenPage? "active"  : "")">
+                    <a class="page-link" asp-controller="TournamentLeaderboard" asp-action="Index" asp-route-pg="@pge">@pge</a>
+          </li>
+        }
+
+
+
+        @if(pager.CurrenPage<pager.TotalPages){
+            <li class="page-item">
+                    <a class="page-link" asp-controller="TournamentLeaderboard" asp-action="Index" asp-route-pg="@(pager.CurrenPage +1)">Next</a>
+            </li>
+             <li class="page-item">
+                    <a class="page-link" asp-controller="TournamentLeaderboard" asp-action="Index" asp-route-pg="@(pager.TotalPages)">Last</a>
+             </li>
+        }
+    </ul>
+
+}
+
+</div>
+
+
+

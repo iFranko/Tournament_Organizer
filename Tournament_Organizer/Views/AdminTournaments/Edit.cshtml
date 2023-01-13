@@ -1,0 +1,144 @@
+﻿@model Tournament_Organizer.Models.Tournament
+<style>
+
+    .action-button {
+        width: 100px;
+        background: #673AB7;
+        font-weight: bold;
+        color: white;
+        border: 0 none;
+        border-radius: 0px;
+        cursor: pointer;
+        padding: 10px 5px;
+        margin: 10px 0px 10px 5px;
+    }
+
+        .action-button:hover, #msform .action-button:focus {
+            background-color: #311B92;
+        }
+
+.image-upload > input
+{
+    display: none;
+}
+</style>
+@{
+    ViewData["Title"] = "Edit";
+}
+
+@{
+    var base64 = "";
+    var imgsrc = "";
+}
+@if (Model.Image != null)
+{
+    base64 = Convert.ToBase64String(Model.Image);
+    imgsrc = string.Format("data:image/gif;base64,{0}", base64);
+
+}
+<div class="container">
+    <h1>Edit</h1>
+    <h3>@Html.DisplayFor(model => model.Tournament_Name)</h3>
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="Edit" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="ID" />
+
+                <div class="form-group">
+                    <div class="image-upload">
+                        <label asp-for="Image" class="control-label" for="file-input">
+                            <p><img src="@imgsrc" width="140" height="140" class="img-circle" /> @Model.Tournament_Name <i class="bi bi-upload"></i></p>
+                        </label>
+                        @*<input id="file-input" type="file" name="Image" asp-for="Image" class="form-control" accept="image/*" />*@
+                        <input type="text" value="@ViewBag.imgValue" name="imgValue" />
+                        <span asp-validation-for="Image" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Ban" class="control-label"></label>
+                    <select asp-for="Ban" class="form-control">
+                        <option value=False>False</option>
+                        <option value=True>True</option>
+                    </select>
+                    <span asp-validation-for="Ban" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="hidden" asp-for="Tournament_Name" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input type="hidden" asp-for="Created_Date_Time" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input type="hidden" asp-for="Start_Date" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input type="hidden" asp-for="End_Date" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input type="hidden" asp-for="Tournament_Type" class="form-control" />
+                </div>
+                <div id="Division" class="form-group">
+                    <label asp-for="Division_Id" class="control-label"></label>
+                    <select  asp-for="Division_Id" class="form-control" asp-items="ViewBag.Divisions"></select>
+                    <span asp-validation-for="Division_Id" class="text-danger"></span>
+                 </div>
+                <div class="form-group">
+                    <input type="hidden" asp-for="Max_Teams_Tournament" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input type="hidden" asp-for="Country" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input type="hidden"  asp-for="City" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input type="hidden" asp-for="Address" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input type="hidden" asp-for="Zip_Code" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input type="hidden"  asp-for="Rule_One" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input type="hidden" asp-for="Rule_Two" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input type="hidden" asp-for="Rule_Three" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input type="hidden"  asp-for="Rule_Four" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input type="hidden" asp-for="Max_Players_Per_Team" class="form-control" min=5 max=30 />
+                </div>
+                <div class="form-group">
+                    <input  type="hidden" asp-for="Stage" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input  type="hidden" asp-for="NextStageMaxTeams" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input  type="hidden"  asp-for="Review" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Update" class="action-button" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="Index">Back @Html.DisplayFor(model => model.Tournament_Name) Dashboard</a>
+    </div>
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function () {
+            document.getElementById("Division").style.display = "none";
+        });
+    </script>
+}

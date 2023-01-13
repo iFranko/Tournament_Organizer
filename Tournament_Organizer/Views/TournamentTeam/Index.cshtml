@@ -1,0 +1,137 @@
+﻿@model IEnumerable<Tournament_Organizer.Models.Tournament_Team>
+
+@{
+    ViewData["Title"] = "Index";
+
+    Pager pager = new Pager();
+    int pageNO = 0;
+
+    if (ViewBag.Pager != null)
+    {
+        pager = ViewBag.Pager;
+        pageNO = pager.CurrenPage;
+    }
+
+}
+
+<h1>Teams Request Dashboard</h1>
+
+<table class="table">
+    <thead class="thead-light">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Team)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tournament)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Group)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NumberOfMatches)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Points)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Scores)
+            </th>
+            <th>
+                In/Out Tournament
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                    @if (item.Team.Image != null)
+                    {
+                        var base64 = Convert.ToBase64String(item.Team.Image);
+                        var imgsrc = string.Format("data:image/gif;base64,{0}", base64);
+                        <img src="@imgsrc" alt="Profile Image" name="aboutme" width="50" height="50" border="0" class="img-circle" />
+                    }
+                    else
+                    {
+                        <img src="" alt="" name="aboutme" width="50" height="50" border="0" class="img-circle" />
+                    }
+                @Html.DisplayFor(modelItem => item.Team.Team_Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Tournament.Tournament_Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Group)
+            </td>
+             <td>
+                @Html.DisplayFor(modelItem => item.NumberOfMatches)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Points)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Scores)
+            </td>
+             <td>
+                    @if( item.Active=="Yes" && item.Status =="Approved"){
+                        <p>In Tournament</p>
+                    }
+                    else if (item.Active == "No" && item.Status == "Approved")
+                    {
+                        <p>Out Tournament</p>
+                    }
+                    else{
+                        <p>No Status</p>
+                    }
+                    
+             </td>
+            <td>
+                    <div class="btn btn-info"> @Html.ActionLink("Edit", "Edit", new { teamID=item.Team_ID, tournamentID=item.Tournament_ID })</div>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+@if (pager.TotalPages > 0)
+{
+    <ul class="pagination justify-content-end">
+
+        @if (pager.CurrenPage > 1)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-controller="TournamentTeam" asp-action="Index" asp-route-pg="1">First</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" asp-controller="TournamentTeam" asp-action="Index" asp-route-pg="@(pager.CurrenPage -1)">Previous</a>
+            </li>
+        }
+
+        @for (var pge = pager.StartPage; pge <= pager.EndPage; pge++)
+        {
+            <li class="page-item @(pge==pager.CurrenPage? "active"  : "")">
+                <a class="page-link" asp-controller="TournamentTeam" asp-action="Index" asp-route-pg="@pge">@pge</a>
+            </li>
+        }
+
+
+
+        @if (pager.CurrenPage < pager.TotalPages)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-controller="TournamentTeam" asp-action="Index" asp-route-pg="@(pager.CurrenPage +1)">Next</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" asp-controller="TournamentTeam" asp-action="Index" asp-route-pg="@(pager.TotalPages)">Last</a>
+            </li>
+        }
+    </ul>
+
+}

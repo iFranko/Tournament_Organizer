@@ -1,0 +1,26 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<User> userManager;
+@inject SignInManager<User> signInManager;
+
+@{
+
+    //var id = from u in _context.Users
+    //         select u;
+    if (!String.IsNullOrEmpty(User.Identity.Name))
+    {
+        var user = await userManager.FindByNameAsync("Admin");
+        var Admin_Eamil = user.Email;
+        ViewBag.adminEamil = Admin_Eamil;
+    }
+
+    <i class="fa fa-ban" style="font-size:48px;color:red"></i>
+    <div class="alert  alert-danger alert-dismissible fade show">
+        <strong>Messgae!</strong><em> You are banned by the Admin. Contact the admin <strong>@ViewBag.adminEamil</strong> and send the rightful reason for the account suspension to be lift up</em>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div>
+        <em>Admin Email: <strong>@ViewBag.adminEamil</strong></em>
+    </div>
+   
+
+}

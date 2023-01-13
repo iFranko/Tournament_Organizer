@@ -1,0 +1,53 @@
+﻿@model IEnumerable<Tournament_Organizer.Models.Division>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<style>
+
+    .action-button {
+        width: 100px;
+        background: #673AB7;
+        font-weight: bold;
+        color: white;
+        border: 0 none;
+        border-radius: 0px;
+        cursor: pointer;
+        padding: 10px 5px;
+        margin: 10px 0px 10px 5px;
+        border-radius: 5px;
+    }
+
+        .action-button:hover, #msform .action-button:focus {
+            background-color: #311B92;
+        }
+
+</style>
+
+<h1>Divisions</h1>
+
+<a class="action-button float-end text-center" asp-action="Create" style="text-decoration: none;">Create New</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.DivisionName)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.DivisionName)
+            </td>
+            <td>
+               <a class="btn btn-info" asp-action="Edit" asp-route-id="@item.Division_Id">Edit</a> @*|
+               <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Division_Id">Delete</a>*@
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

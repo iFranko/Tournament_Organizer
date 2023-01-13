@@ -1,0 +1,67 @@
+﻿@model IEnumerable<Tournament_Organizer.Models.Team_User>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Players Request Dashboard</h1>
+
+
+<table class="table">
+    <thead class="thead-light">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Team)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User.UserName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User.First_Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User.Last_Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User_Role)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Team.Team_Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.First_Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.Last_Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User_Role)
+            </td>
+            <td>
+                    <div class="btn btn-info">@Html.ActionLink("Edit", "Edit", new {userID=item.User_ID, teamID=item.Team_ID })</div>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

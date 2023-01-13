@@ -1,0 +1,131 @@
+﻿@model Tournament_Organizer.Models.Tournament_Leaderboard
+
+@{
+    ViewData["Title"] = "Create";
+}
+<style>
+
+    .action-button {
+        width: 100px;
+        background: #673AB7;
+        font-weight: bold;
+        color: white;
+        border: 0 none;
+        border-radius: 0px;
+        cursor: pointer;
+        padding: 10px 5px;
+        margin: 10px 0px 10px 5px;
+    }
+
+        .action-button:hover, #msform .action-button:focus {
+            background-color: #311B92;
+        }
+</style>
+<h1>Create a Match</h1>
+<br/>
+
+
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-@ViewBag.State alert-dismissible fade show">
+        <strong>Messgae!</strong><em> @ViewBag.Message Click here to go to <a asp-action="Index">Matches Dashboard</a></em>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (ViewBag.Message == null)
+{
+    <div class="alert alert-info alert-dismissible fade show">
+        <strong>Messgae!</strong> <em> Try to filter different groups to set all teams current teams in group A <strong> @ViewBag.teamCountA </strong> and in group B <strong> @ViewBag.teamCountB</strong> </em>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+   
+}
+<form id="groupForm" asp-controller="TournamentLeaderboard" method="get" asp-action="Create" class="form-inline my-2 my-lg-0">
+    <div class="input-group">
+        <div class="pe-3">
+            <label class="control-label pt-1">Select a Group</label>
+        </div>
+        <div class="pe-3"  style="width: 200px;">
+            <select id="group" name="Group" class="form-control" asp-items="ViewBag.Groups"></select>
+        </div>
+
+        <div><button id="filter" class="btn btn-primary" type="submit">Filter</button></div>
+        
+    </div>
+</form>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            @if (TempData["teamSelectError"]!=null){
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <strong>Messgae!</strong><em> @TempData["teamSelectError"]</em>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+           
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Team_One_ID" class="control-label"></label>
+                <select id="teamOne"  asp-for="Team_One_ID" class="form-control" asp-items="ViewBag.Team_One_ID" ></select>
+                <span asp-validation-for="Team_One_ID" class="text-danger"></span>
+            </div>
+           
+            <div class="form-group">
+                <label asp-for="Team_Two_ID" class="control-label"></label>
+                <select  asp-for="Team_Two_ID" class="form-control" asp-items="ViewBag.Team_Two_ID"  ></select>
+                <span asp-validation-for="Team_Two_ID" class="text-danger"></span>
+            </div>
+
+
+            <div class="form-group">
+                <input type="hidden" asp-for="Tournament_ID" class="form-control" value="@ViewBag.Tournament_ID" />
+                <span asp-validation-for="Tournament_ID" class="text-danger"></span>
+            </div>
+          
+            <div class="form-group">
+                <label asp-for="Game_Date" class="control-label"></label>
+                <input asp-for="Game_Date" class="form-control" />
+                <span asp-validation-for="Game_Date" class="text-danger"></span>
+            </div>
+           
+            <div class="form-group">
+                   <label asp-for="Game_Status"></label>
+                   <select asp-for="Game_Status" class="form-control">
+                       <option value="New" selected>New</option>
+                   </select>
+                   <span asp-validation-for="Game_Status" class="text-danger"></span>
+            </div>
+            <div class="form-group"  style=" pointer-events: none;">
+                <label class="control-label">Selected Group</label>
+                <select name="Group" class="form-control" asp-items="ViewBag.Groups"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="action-button" />
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Matches Dashboard</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+
+    <script>
+        $(document).ready(function () {
+
+            document.getElementById("group").onchange = function () {
+                document.getElementById("groupForm").submit();
+            };
+
+          
+        });
+    </script>
+
+    
+}

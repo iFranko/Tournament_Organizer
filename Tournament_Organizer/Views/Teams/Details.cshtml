@@ -1,0 +1,341 @@
+﻿@model Tournament_Organizer.Models.Team
+
+
+<style>
+
+    .action-button {
+        width: 100px;
+        background: #673AB7;
+        font-weight: bold;
+        color: white;
+        border: 0 none;
+        border-radius: 0px;
+        cursor: pointer;
+        padding: 10px 5px;
+        margin: 10px 0px 10px 5px;
+    }
+
+        .action-button:hover, #msform .action-button:focus {
+            background-color: #311B92;
+        }
+
+
+    .review {
+        float: left;
+        height: 46px;
+        padding: 0 10px;
+    }
+
+        .review:not(:checked) > input {
+            position: absolute;
+            top: -9999px;
+        }
+
+        .review:not(:checked) > label {
+            float: right;
+            width: 1em;
+            overflow: hidden;
+            white-space: nowrap;
+            cursor: pointer;
+            font-size: 30px;
+            color: #ccc;
+        }
+
+            .review:not(:checked) > label:before {
+                content: '★ ';
+            }
+
+        .review > input:checked ~ label {
+            color: #ffc700;
+        }
+
+        .review:not(:checked) > label:hover,
+        .review:not(:checked) > label:hover ~ label {
+            color: #deb217;
+        }
+
+        .review > input:checked + label:hover,
+        .review > input:checked + label:hover ~ label,
+        .review > input:checked ~ label:hover,
+        .review > input:checked ~ label:hover ~ label,
+        .review > label:hover ~ input:checked ~ label {
+            color: #c59b08;
+        }
+</style>
+@{
+    ViewData["Title"] = "Details";
+}
+@{
+    var base64 = "";
+    var imgsrc = "";
+}
+@if (Model.Image != null)
+{
+    base64 = Convert.ToBase64String(Model.Image);
+    imgsrc = string.Format("data:image/gif;base64,{0}", base64);
+
+}
+@if (Model.Ban==true){
+   <h1>@Html.DisplayFor(model => model.Team_Name) <i class="fa fa-ban" style="font-size:48px;color:red"></i></h1>
+}
+else{
+    <h1>@Html.DisplayFor(model => model.Team_Name) </h1>
+}
+<div class="container">
+    <div class="span3 well">
+        <center>
+            @if (Model.Ban == true && ViewBag.DetailManagerRole && ViewBag.managerTeamOwener)
+            {
+                <div class="alert  alert-danger alert-dismissible fade show">
+                    <strong>Messgae!</strong><em> Your team was banned by Admin. Please contact Admin @ViewBag.adminEmail email if you wish remove the ban</em>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <div>
+                    <em>Admin Email: <strong>@ViewBag.adminEmail</strong></em>
+                </div>
+            }
+            @if (Model.Ban == true && !ViewBag.DetailManagerRole && !ViewBag.managerTeamOwener)
+            {
+                <div class="alert  alert-danger alert-dismissible fade show">
+                    <strong>Messgae!</strong><em> This team is banned. Contact your team manager if you wish to leave or get more info about the ban</em>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                 
+            }
+           
+            <a href="#aboutModal" data-bs-toggle="modal" data-bs-target="#myModal"><img src="@imgsrc" name="aboutme" width="140" height="140" class="img-circle"></a>
+            <h3>@Html.DisplayFor(model => model.Team_Name)</h3>
+            <em>click on @Html.DisplayFor(model => model.Team_Name) logo to learn more</em><br />
+            @if (ViewBag.DetailManagerRole && ViewBag.managerTeamOwener)
+            {
+                <p> <a class="btn btn-info" asp-action="Edit" asp-route-id="@Model.ID">Edit</a> or  <a class="btn btn-info" asp-action="Delete" asp-route-id="@Model.ID">Delete</a></p>
+            }
+            @if (!ViewBag.DetailManagerRole && !ViewBag.managerTeamOwener && ViewBag.loggedinUser)
+            {
+               
+                <form id="reviewForm" asp-controller="Teams" asp-action="Review" method="post" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="h-100 d-flex align-items-center justify-content-center">
+                        <div class="review">
+                            <input type="radio" id="star5" name="review" value="5" />
+                            <label for="star5" title="5">5 stars</label>
+                            <input type="radio" id="star4" name="review" value="4" />
+                            <label for="star4" title="4">4 stars</label>
+                            <input type="radio" id="star3" name="review" value="3" />
+                            <label for="star3" title="3">3 stars</label>
+                            <input type="radio" id="star2" name="review" value="2" />
+                            <label for="star2" title="2">2 stars</label>
+                            <input type="radio" id="star1" name="review" value="1" />
+                            <label for="star1" title="1">1 star</label>
+                        </div>
+                        <input value="@Html.DisplayFor(model => model.ID)" type="hidden" class="form-control" name="teamID" />
+                        <input type="submit" id="reviewButton" name="next" class="btn btn-info" value="Rate" />
+                    </div>
+                </form>
+                @if (TempData["notValidReview"] != null)
+                {
+                    <div class="alert  alert-danger alert-dismissible fade show">
+                        <strong>Messgae!</strong><em> Sorry @TempData["notValidReview"] not Valid. Review must be in range of 1 to 5</em>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+            }
+            <em>Overall Rating <strong>@Html.DisplayFor(model => model.Review)</strong> Out of 5</em><br />
+            @if (ViewBag.DetailPlayerRole)
+            {
+                if (ViewBag.PlayerUserID != null)
+                {
+                    @if (ViewBag.getPlayerTeamStatus == "Join")
+                    {
+                        //if team is not full allow a player to join
+                        if (ViewBag.TeamMaxedUp == false && Model.Ban == false)
+                        {
+                            <form id="msform" asp-controller="Teams" asp-action="JoinTournament" method="post" enctype="multipart/form-data">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <input value="@ViewBag.PlayerUserID" type="hidden" class="form-control" name="PlayerID" />
+                                <input value="@Html.DisplayFor(model => model.ID)" type="hidden" class="form-control" name="TeamID" />
+                                <input type="submit" id="PlayerID" name="next" class="action-button" value="@ViewBag.getPlayerTeamStatus" />
+                            </form>
+                        }
+                        // otherwise show a message and don't allow player to join
+                        else if (ViewBag.TeamMaxedUp == true)
+                        {
+                            <div class="alert  alert-warning alert-dismissible fade show">
+                                <strong>Messgae!</strong><em> Sorry You can't join teaam now. The team is full.</em>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+
+                        }
+                        // otherwise show a message and don't allow team to join
+                        else if (Model.Ban == true)
+                        {
+                            <div class="alert  alert-warning alert-dismissible fade show">
+                                <strong>Messgae!</strong><em> The tournament is banned and you can't join at the moment.</em>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+
+                        }
+
+                    }
+                    else if (ViewBag.existingPlayer && ViewBag.getPlayerTeamStatus != "Leave")
+                    {
+                        <form id="msform" asp-controller="Teams" asp-action="Cancel">
+                            <input type="hidden" value="@ViewBag.PlayerUserID" name="PlayerID" />
+                            <input type="hidden" value="@Html.DisplayFor(model => model.ID)" name="TeamID" />
+                            <input type="submit" value="@ViewBag.getPlayerTeamStatus" class="action-button" />
+                            <br />
+                            <div class="alert  alert-@ViewBag.statuClass alert-dismissible fade show">
+                                <strong>Messgae!</strong><em> @ViewBag.statusMessage</em>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        </form>
+                    }
+                    else if (ViewBag.existingPlayer && ViewBag.getPlayerTeamStatus == "Leave")
+                    {
+                        //confirmation window to double check the useris leaving tournament
+                        <button class="action-button" data-bs-toggle="modal" data-bs-target="#ConfirmModal" value="">
+                            @ViewBag.getPlayerTeamStatus
+                        </button>
+
+                        <div class="modal fade" id="ConfirmModal" tabindex="-1" role="dialog" aria-labelledby="ConfirmModalTitle" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="ConfirmModalTitle">Confirm to Leave</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h7>Are you sure you want to leave the team?</h7><br />
+                                        <h7>Click <Strong>Confirm</Strong> or <Strong>Cancel</Strong></h7>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="action-button" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                        <form id="msform" asp-controller="Teams" asp-action="Cancel">
+                                            <input type="hidden" value="@ViewBag.PlayerUserID" name="PlayerID" />
+                                            <input type="hidden" value="@Html.DisplayFor(model => model.ID)" name="TeamID" />
+                                            <input type="submit" value="Confirm" class="action-button" />
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="alert  alert-@ViewBag.statuClass alert-dismissible fade show">
+                            <strong>Messgae!</strong><em> @ViewBag.statusMessage</em>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+                    else if (!ViewBag.existingPlayer)
+                    {
+                        // Show warining message that the team is already signed up with another tournament
+                        <div class="alert alert-warning alert-dismissible fade show">
+                            <strong>Warning!</strong> You are already signed up with this team. Check <a asp-action="Details" asp-route-id="@ViewBag.teamIDAssociatedWithPlayer">Here</a>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+                }
+               
+            }
+        </center>
+    </div>
+    <!-- Logo Team information  -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">Information about @Html.DisplayFor(model => model.Team_Name)</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"  aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <center>
+                        <img src="@imgsrc" name="aboutme" width="140" height="140" border="0" class="img-circle">
+                        <h3 class="media-heading">@Html.DisplayFor(model => model.Team_Name)<small></small></h3>
+                        <span><strong>Location</strong></span>
+                        <span class="label label-warning">@Html.DisplayFor(model => model.Country)</span>
+                        <span class="label label-info">@Html.DisplayFor(model => model.City)</span>
+                        <span class="label label-info">@Html.DisplayFor(model => model.Address)</span>
+                        <span class="label label-success">@Html.DisplayFor(model => model.Zip_Code)</span>
+                    </center>
+                    <hr>
+                    <center>
+                        <p class="text-left">
+                            <strong>Description </strong><br>
+                            @Html.DisplayFor(model => model.Team_Name) is a team of maximum of @Html.DisplayFor(model => model.Max_Player_Team)
+                            players plays in division @ViewBag.DivisionName. @Html.DisplayFor(model => model.Team_Name) was created on  @Html.DisplayFor(model => model.Created_Date_Time). Main Jeresy Colour is @Html.DisplayFor(model => model.JerseyColour)
+                        </p>
+                        <br>
+                    </center>
+                </div>
+                <div class="modal-footer">
+                    <center>
+                        <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+                    </center>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<br />
+<div class="container">
+
+    <table class="table">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">
+                    Player Name
+                </th>
+                <th scope="col">
+                    @Html.DisplayNameFor(model => model.Team_User.FirstOrDefault().User.Fav_Position)
+                </th>
+                <th scope="col">
+                    @Html.DisplayNameFor(model => model.Team_User.FirstOrDefault().User.Email)
+                </th>
+                <th scope="col">
+                    @Html.DisplayNameFor(model => model.Team_User.FirstOrDefault().User.Age)
+                </th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in ViewBag.Players)
+            {
+                <tr>
+                    <td>
+                        @item.User.UserName
+                    </td>
+                    <td>
+                        @item.User.Fav_Position
+                    </td>
+                    <td>
+                        @item.User.Email
+                    </td>
+                    <td>
+                        @item.User.Age
+                    </td>
+                    
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+</div>
+
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        $(document).ready(function () {
+
+
+            radiobtn = document.getElementById("star" + @ViewBag.userReview+"");
+            radiobtn.checked = true;
+        });
+    </script>
+
+}
